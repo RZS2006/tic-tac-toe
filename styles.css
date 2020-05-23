@@ -1,8 +1,8 @@
 /* --- Base Styles --- */
 
 :root {
-    --primary: rgb(0, 112, 112);
-    --primaryHover: rgb(1, 90, 90);
+    --primary: rgb(0, 189, 202);
+    --primaryHover: rgb(1, 156, 156);
 }
 
 * {
@@ -33,7 +33,6 @@ body {
 
 .btn {
     background-color: var(--primary);
-    color: white;
     border: none;
     border-radius: 5px;
 }
@@ -128,7 +127,7 @@ body {
         }
 
         #result-element {
-            font-size: 4.4rem;
+            font-size: 3rem;
         }
 
         /* --- Back Button Container --- */

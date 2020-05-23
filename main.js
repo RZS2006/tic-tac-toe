@@ -53,10 +53,10 @@ const handleClick = (event) => {
     let clickedCell = event.target
 
     markPosition(clickedCell.id, currentPlayer)
-    if (checkStatus(currentPlayer)) {
-        gameEnded(checkStatus(currentPlayer))
+    if (checkStatus(cellArray, currentPlayer)) {
+        gameEnded(checkStatus(cellArray, currentPlayer))
         return;
-    } 
+    }
     switchTurn()
     
 
@@ -68,9 +68,9 @@ const handleClick = (event) => {
         randomPosition() 
     }
 
-    // if (gameModeSelect.value === "expert-ai") {
-    //     bestPosition()
-    // }
+    if (gameModeSelect.value === "expert-ai") {
+        bestPosition()
+    }
 }
 
 const markPosition = (index, player) => {
@@ -81,12 +81,12 @@ const markPosition = (index, player) => {
 }
 
 const randomPosition = () => {
-    let randomNumber = Math.floor(Math.random() * availableCells().length)
-    let index = availableCells()[randomNumber]
+    let randomNumber = Math.floor(Math.random() * availableCells(cellArray).length)
+    let index = availableCells(cellArray)[randomNumber]
     setTimeout(() => {
         markPosition(index, opponentPlayer)
-        if (checkStatus(currentPlayer)) {
-            gameEnded(checkStatus(currentPlayer))
+        if (checkStatus(cellArray, currentPlayer)) {
+            gameEnded(checkStatus(cellArray, currentPlayer))
             return;
         }
         switchTurn()
@@ -94,85 +94,87 @@ const randomPosition = () => {
     }, 1000)
 }
 
-// const bestPosition = () => {
-//     let cellArrayCopy = [...cellArray]
+const bestPosition = () => {
+    let cellArrayCopy = [...cellArray]
 
-//     let bestScore = -Infinity
-//     let bestMove;
+    let bestScore = -Infinity;
+    let bestMove;
 
-//     availableCells().forEach(index => {
-//         cellArrayCopy[index] = currentPlayer
-//     })
-//     let score = minimax(cellArray, false)
-//     if (score > bestScore) {
-//         bestScore = score;
-//         bestMove = index;
-//     }
+    availableCells(cellArray).forEach(index => {
+        cellArrayCopy[index] = opponentPlayer;
+        let score = minimax(cellArrayCopy, false)
+        cellArrayCopy[index] = cellArray[index];
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = index
+        }
+    })
 
-//     setTimeout(() => {
-//         markPosition(bestMove, opponentPlayer)
-//         if (checkStatus(currentPlayer)) {
-//             gameEnded(checkStatus(currentPlayer))
-//             return;
-//         }
-//         switchTurn()
-//         addAvailableEvents()
-//     }, 1000)
-// }
+    setTimeout(() => {
+        markPosition(bestMove, opponentPlayer)
+        if (checkStatus(cellArray, currentPlayer)) {
+            gameEnded(checkStatus(cellArray, currentPlayer))
+            return;
+        }
+        switchTurn()
+        addAvailableEvents()
+    }, 1000)
+}
 
-// let scores = {
-//     opponentPlayer: 10,
-//     userPlayer: -10,
-//     drae: 0 
-// }
+const minimaxScores = {
+    opponentPlayer: 10,
+    userPlayer: -10,
+    draw: 0 
+}
 
-// const minimax = (board, isMaxminzing) => {
-//     let result = checkStatus();
-//     if (result) {
-//         let score = scores[result]
-//         return score
-//     }
+const minimax = (board, isMaximizing) => {
+    let boardCopy = [...board];
+    if (checkStatus(board, currentPlayer)) {
+        return minimaxScores[checkStatus(board, currentPlayer)];
+    }
 
-//     if (isMaxminzing) {
-//         let bestScore = -Infinity
-//         availableCells().forEach(index => {
-//             cellArrayCopy[index] = currentPlayer;
-//             let score = minimax(board, true);
-//             if (score > bestScore) {
-//                 bestScore = score;
-//                 bestMove = index;
-//             }
-//         })
-//         return bestScore
-//     } else {
-//         let bestScore = Infinity
-//         availableCells().forEach(index => {
-//             cellArrayCopy[index] = currentPlayer;
-//             let score = minimax(board, false);
-//             if (score < bestScore) {
-//                 bestScore = score;
-//                 bestMove = index;
-//             }
-//         })
-//         return bestScore
-//     }
-// }
+    if (isMaximizing) {
+        let bestScore = -Infinity
+        availableCells(board).forEach(index => {
+            boardCopy[index] = opponentPlayer;
+            console.log(boardCopy[index])
+            let score = minimax(boardCopy, false);
+            boardCopy[index] = board[index]
+            if (score > bestScore) {
+                bestScore = score;
+            }
+        })
+        return bestScore
+    } else {
+        let bestScore = Infinity
+        availableCells(board).forEach(index => {
+            boardCopy[index] = userPlayer;
+            console.log(boardCopy[index])
+            let score = minimax(boardCopy, true);
+            boardCopy[index] = board[index]
+            if (score < bestScore) {
+                bestScore = score;
+            }
+        })
+        return bestScore
+    }
+}
 
-const checkStatus = (player) => {
+const checkStatus = (array, player) => {
     let status = null;
     winningCombos.forEach(combo => {
         let c1 = combo[0];
         let c2 = combo[1];
         let c3 = combo[2];
-        if (cellArray[c1] === cellArray[c2] && cellArray[c1] === cellArray[c3] && cellArray[c1] === player) {
-            console.log("win");
+        if (array[c1] === array[c2] && array[c1] === array[c3] && array[c1] === player) {
             removeAllEvents()
-            combo.forEach(index => boardCells[index].classList.add("winner"))
+            if (array === cellArray) {
+                combo.forEach(index => boardCells[index].classList.add("winner"))
+            }
             status = player;
         }
     })
-    if (status === null && availableCells().length === 0) { 
-        console.log("draw");
+    if (status === null && availableCells(array).length === 0) { 
         removeAllEvents()
         status = "draw";
     }
@@ -230,12 +232,13 @@ const startGame = (startingPlayer) => {
         showTurn(currentPlayer)
 
         if (gameModeSelect.value === "beginner-ai" && currentPlayer === opponentPlayer) {
+            removeAllEvents()
             randomPosition()
         }
 
-        // if (gameModeSelect.value === "expert-ai" && currentPlayer === opponentPlayer) {
-        //     bestPosition()
-        // }
+        if (gameModeSelect.value === "expert-ai" && currentPlayer === opponentPlayer) {
+            bestPosition()
+        }
 }
 
 const setupGame = (gameMode, startingPlayer) => {
@@ -279,13 +282,13 @@ const removeAllEvents = () => {
 }
 
 const addAvailableEvents = () => {
-    availableCells().forEach(index => {
+    availableCells(cellArray).forEach(index => {
         boardCells[index].addEventListener("click", handleClick);
     })
 }
 
-const availableCells = () => {
-    return cellArray.filter(value => typeof value === "number");
+const availableCells = (board) => {
+    return board.filter(value => typeof value === "number");
 }
 
 const setPlayerScores = () => {
