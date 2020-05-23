@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <main class="main-container justify-middle">
+        <div class="score-container">
+            <div class="player-1-container justify-middle" id="player-1-container">
+                <span id="player-1-name-element">Player 1</span>
+                <span id="player-1-score-element">0</span>
+            </div>
+            <div class="result-container justify-middle">
+                <span id="result-element">X Wins!</span>
+            </div>
+            <div class="player-2-container justify-middle" id="player-2-container">
+                <span id="player-2-score-element">0</span>
+                <span id="player-2-name-element">Player 2</span>
+            </div>
+        </div>
+        <div class="board" id="board">
+            <div class="cell justify-middle" id="0" data-cell>X</div>
+            <div class="cell justify-middle" id="1" data-cell>O</div>
+            <div class="cell justify-middle" id="2" data-cell></div>
+            <div class="cell justify-middle" id="3" data-cell></div>
+            <div class="cell justify-middle" id="4" data-cell></div>
+            <div class="cell justify-middle" id="5" data-cell></div>
+            <div class="cell justify-middle" id="6" data-cell></div>
+            <div class="cell justify-middle" id="7" data-cell></div>
+            <div class="cell justify-middle" id="8" data-cell></div>
+        </div>
+        <div class="back-btn-container">
+            <button class="back-btn btn" id="back-btn">Back to Start Menu</button>
+        </div>
+    </main>
+    <div class="settings-container justify-middle" id="settings-container">
+        <div class="settings-panel justify-middle">
+            <h1>Tic Tac Toe</h1>
+            <select class="select-input" name="game-mode" id="game-mode">
+                <option value="beginner-ai">Beginner AI</option>
+                <option value="expert-ai">Expert AI</option>
+                <option value="two-players">Two Players</option>
+            </select>
+            <select class="select-input" name="starting-player" id="starting-player">
+                <option value="player-X">Play as X</option>
+                <option value="player-O">Play as O</option>
+            </select>
+            <button class="start-game-btn btn" id="start-game-btn">Start Game</button>
+        </div>
+    </div>
+</body>
+</html>
