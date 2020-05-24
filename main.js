@@ -21,8 +21,11 @@ const resultElement = document.querySelector("#result-element");
 
 // --- Variables ---
 
-let userPlayer;
-let opponentPlayer;
+const player1 = "X";
+const player2 = "O";
+
+let humanPlayer;
+let aiPlayer;
 
 let currentPlayer;
 
@@ -48,7 +51,7 @@ const winningCombos = [
 // --- Main Functions ---
 
 const handleClick = (event) => {
-    removeAllEvents() // Remove All Event Listeners
+    removeAllEvents()
 
     let clickedCell = event.target
 
@@ -84,7 +87,7 @@ const randomPosition = () => {
     let randomNumber = Math.floor(Math.random() * availableCells(cellArray).length)
     let index = availableCells(cellArray)[randomNumber]
     setTimeout(() => {
-        markPosition(index, opponentPlayer)
+        markPosition(index, aiPlayer)
         if (checkStatus(cellArray, currentPlayer)) {
             gameEnded(checkStatus(cellArray, currentPlayer))
             return;
@@ -101,9 +104,11 @@ const bestPosition = () => {
     let bestMove;
 
     availableCells(cellArray).forEach(index => {
-        cellArrayCopy[index] = opponentPlayer;
-        let score = minimax(cellArrayCopy, false)
+        cellArrayCopy[index] = aiPlayer;
+        console.log(cellArrayCopy)
+        let score = minimax(cellArrayCopy, false, aiPlayer)
         cellArrayCopy[index] = cellArray[index];
+        console.log(score)
         if (score > bestScore) {
             bestScore = score;
             bestMove = index
@@ -111,7 +116,7 @@ const bestPosition = () => {
     })
 
     setTimeout(() => {
-        markPosition(bestMove, opponentPlayer)
+        markPosition(bestMove, aiPlayer)
         if (checkStatus(cellArray, currentPlayer)) {
             gameEnded(checkStatus(cellArray, currentPlayer))
             return;
@@ -121,37 +126,39 @@ const bestPosition = () => {
     }, 1000)
 }
 
-const minimaxScores = {
-    opponentPlayer: 10,
-    userPlayer: -10,
-    draw: 0 
-}
-
-const minimax = (board, isMaximizing) => {
-    let boardCopy = [...board];
-    if (checkStatus(board, currentPlayer)) {
-        return minimaxScores[checkStatus(board, currentPlayer)];
+const minimax = (board, isMaximizing, player) => {
+    let statusResult = checkStatus(board, player);
+    if (statusResult !== null) {
+        switch(statusResult) {
+            case "draw": 
+                return 0
+                break;
+            case aiPlayer:
+                return 10
+                break;
+            case humanPlayer:
+                return -10
+                break;
+        }
     }
 
-    if (isMaximizing) {
-        let bestScore = -Infinity
+    else if (isMaximizing) {
+        let bestScore = -Infinity;
         availableCells(board).forEach(index => {
-            boardCopy[index] = opponentPlayer;
-            console.log(boardCopy[index])
-            let score = minimax(boardCopy, false);
-            boardCopy[index] = board[index]
+            board[index] = aiPlayer;
+            let score = minimax(board, false, aiPlayer);
+            board[index] = cellArray[index]
             if (score > bestScore) {
                 bestScore = score;
             }
         })
         return bestScore
     } else {
-        let bestScore = Infinity
+        let bestScore = Infinity;
         availableCells(board).forEach(index => {
-            boardCopy[index] = userPlayer;
-            console.log(boardCopy[index])
-            let score = minimax(boardCopy, true);
-            boardCopy[index] = board[index]
+            board[index] = humanPlayer;
+            let score = minimax(board, true, humanPlayer);
+            board[index] = cellArray[index]
             if (score < bestScore) {
                 bestScore = score;
             }
@@ -182,12 +189,12 @@ const checkStatus = (array, player) => {
 }
 
 const switchTurn = () => {
-    if (currentPlayer === userPlayer) {
-        currentPlayer = opponentPlayer;
-        showTurn(opponentPlayer)
+    if (currentPlayer === player1) {
+        currentPlayer = player2;
+        showTurn(player2)
     } else {
-        currentPlayer = userPlayer;
-        showTurn(userPlayer)
+        currentPlayer = player1;
+        showTurn(player1)
     }
 }
 
@@ -231,12 +238,12 @@ const startGame = (startingPlayer) => {
         addAllEvents()
         showTurn(currentPlayer)
 
-        if (gameModeSelect.value === "beginner-ai" && currentPlayer === opponentPlayer) {
+        if (gameModeSelect.value === "beginner-ai" && currentPlayer === aiPlayer) {
             removeAllEvents()
             randomPosition()
         }
 
-        if (gameModeSelect.value === "expert-ai" && currentPlayer === opponentPlayer) {
+        if (gameModeSelect.value === "expert-ai" && currentPlayer === aiPlayer) {
             bestPosition()
         }
 }
@@ -248,22 +255,20 @@ const setupGame = (gameMode, startingPlayer) => {
     setPlayerScores()
 
     if (gameMode === "two-players") {
-        userPlayer = "X";
-        opponentPlayer = "O";
         setPlayerNames("Player 1", "Player 2")
-        startGame(userPlayer)
+        startGame(player1)
     } 
     else if (startingPlayer === "player-X") {
-        userPlayer = "X";
-        opponentPlayer = "O";
+        humanPlayer = player1;
+        aiPlayer = player2;
         setPlayerNames("User", "Opponent")
-        startGame(userPlayer)
+        startGame(humanPlayer)
     } 
     else if (startingPlayer === "player-O") {
-        userPlayer = "O";
-        opponentPlayer = "X";
+        aiPlayer = player1;
+        humanPlayer = player2;
         setPlayerNames("Opponent", "User")
-        startGame(opponentPlayer)
+        startGame(aiPlayer)
     }
 }
 
