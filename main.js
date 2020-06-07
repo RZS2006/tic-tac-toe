@@ -105,10 +105,8 @@ const bestPosition = () => {
 
     availableCells(cellArray).forEach(index => {
         cellArrayCopy[index] = aiPlayer;
-        console.log(cellArrayCopy)
         let score = minimax(cellArrayCopy, false, aiPlayer)
         cellArrayCopy[index] = cellArray[index];
-        console.log(score)
         if (score > bestScore) {
             bestScore = score;
             bestMove = index
@@ -192,9 +190,11 @@ const switchTurn = () => {
     if (currentPlayer === player1) {
         currentPlayer = player2;
         showTurn(player2)
+        console.log(currentPlayer)
     } else {
         currentPlayer = player1;
         showTurn(player1)
+        console.log(currentPlayer)
     }
 }
 
@@ -212,7 +212,7 @@ const gameEnded = (status) => {
     }
     setTimeout(() => {
         switchTurn()
-        startGame(currentPlayer)
+        startGame(currentPlayer) // Problem with Player Switching for Next Round: Track the Starting Player of Match
     }, 2000)
 }
 
