@@ -34,6 +34,8 @@ let player2Score = 0;
 
 let cellArray;
 
+let gameEndStatus;
+
 const winningCombos = [
     [0, 1, 2],
     [3, 4, 5],
@@ -77,6 +79,7 @@ const handleClick = (event) => {
 }
 
 const markPosition = (index, player) => {
+    if (gameEndStatus) return
     const selectedCell = document.getElementById(index)
     selectedCell.innerText = player;
     cellArray[index] = player;
@@ -250,6 +253,7 @@ const startGame = (startingPlayer) => {
 
 const setupGame = (gameMode, startingPlayer) => {
 
+    gameEndStatus = false;
     player1Score = 0;
     player2Score = 0;
     setPlayerScores()
@@ -315,12 +319,15 @@ const setResult = (resultText) => {
 // --- Event Listeners ---
 
 startGameBtn.addEventListener("click", () => {
-    settingsContainer.classList.add("hidden");
-    setupGame(gameModeSelect.value, startingPlayerSelect.value);
+    setTimeout(() => {
+        settingsContainer.classList.add("hidden");
+        setupGame(gameModeSelect.value, startingPlayerSelect.value);
+    }, 1000)
 })
 
 backBtn.addEventListener("click", () => {
     settingsContainer.classList.remove("hidden");
+    gameEndStatus = true;
 })
 
 gameModeSelect.addEventListener("change", () => {
